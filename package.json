@@ -1,6 +1,6 @@
 {
   "name": "snnr",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Sinan Nar Resume",
   "bin": {
     "snnr": "snnr.js"
@@ -15,6 +15,9 @@
     "sinannar",
     "sinan.nar"
   ],
+  "scripts": {
+    "snnr": "node snnr.js"
+  },
   "author": "Sinan Nar",
   "license": "MIT",
   "dependencies": {
