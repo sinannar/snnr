@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 'use strict';
 var c = require('chalk');
-var link = require('terminal-link');
+// var link = require('terminal-link');
 var img = require('terminal-image');
 var got = require('got');
 var ww = require('word-wrap');
-var iq = require('inquirer');
-var opn = require('open');
+// var iq = require('inquirer');
+// var opn = require('open');
 
 console.log("Hello World\n");
 //https://avatars.githubusercontent.com/u/1283812?v=4
