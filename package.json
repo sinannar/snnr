@@ -1,6 +1,6 @@
 {
   "name": "snnr",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Sinan Nar Resume",
   "bin": {
     "fka": "fka.js"
