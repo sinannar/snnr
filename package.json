@@ -1,9 +1,9 @@
 {
   "name": "snnr",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Sinan Nar Resume",
   "bin": {
-    "fka": "fka.js"
+    "snnr": "snnr.js"
   },
   "repository": {
     "type": "git",
