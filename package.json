@@ -26,7 +26,6 @@
     "inquirer": "^7.3.0",
     "open": "6.0.0",
     "terminal-image": "^1.1.0",
-    "terminal-link": "^2.1.1",
-    "word-wrap": "^1.2.3"
+    "terminal-link": "^2.1.1"
   }
 }
