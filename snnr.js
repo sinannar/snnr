@@ -1,3 +1,6 @@
+#!/usr/bin/env node
+'use strict';
+
 import got from 'got';
 import terminalImage from 'terminal-image';
 import terminalLink from 'terminal-link';
