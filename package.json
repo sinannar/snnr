@@ -1,7 +1,7 @@
 {
   "name": "snnr",
-  "version": "1.0.5",
-  "description": "Sinan Nar Resume",
+  "version": "1.0.6",
+  "description": "Sinan Nar About",
   "bin": {
     "snnr": "snnr.js"
   },
