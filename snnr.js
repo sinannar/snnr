@@ -70,6 +70,7 @@ const answer = await inquirer.prompt([
         name: 'url',
         message: 'Where would you like to go?',
         choices: [
+          new inquirer.Separator(chalk.dim('── Profiles ──')),
           { name: mvpLink, value: mvpUrl },
           { name: githubLink, value: githubUrl },
           { name: linkedinLink, value: linkedinUrl },
