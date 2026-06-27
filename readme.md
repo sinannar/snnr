@@ -29,27 +29,36 @@ snnr
 When you run the command the terminal will:
 
 1. Render my GitHub avatar as ASCII / pixel art.
-2. Print a short intro about me.
+2. Print a summary card — title, stack, talks, and community involvement.
 3. Show an interactive list — pick an option and the matching profile opens
    in your default browser.
 
 ```
- Hi there
+ ┌─────────────────────────────────────────────────────────┐
+ │  Sinan Nar — Senior Software Engineer · Microsoft MVP   │
+ └─────────────────────────────────────────────────────────┘
 
- I am Sinan Nar. I work as a Software Engineer currently and I am
- interested in dotnet, angular and azure.
+ Consultant focused on Apps and AI at ARINCO, a Microsoft & GitHub partner.
+ Co-organiser of Aotearoa Azure Meetup, Auckland .NET UG, and NZ GitHub UG.
 
- ? These are the options for contacting me (Use arrow keys)
- ❯ Github
+ Stack
+ .NET & C#      .NET 6+ · .NET Aspire · ASP.NET · EF Core
+ Azure          App Services · Functions · Container Apps · AKS · Service Bus
+ Frontend       TypeScript · Angular · Ionic · Node.js
+ ...
+
+ ? Where would you like to go? (Use arrow keys)
+ ❯ GitHub
    LinkedIn
-   Twitter
+   Blog
+   Meetups
 ```
 
 ## 🔗 Links
 
 - GitHub — <https://github.com/sinannar>
 - LinkedIn — <https://www.linkedin.com/in/sinannar>
-- Twitter — <https://twitter.com/snn_nr>
+- Blog — <https://sinannar.github.io/blog/>
 
 ## 🧰 Requirements
 

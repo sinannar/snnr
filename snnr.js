@@ -11,42 +11,65 @@ import open from 'open';
 let img = await got('https://avatars.githubusercontent.com/u/1283812?v=4', { responseType: 'buffer' });
 img = await terminalImage.buffer(img.body, { width: '33%' });
 
+const githubUrl = 'https://github.com/sinannar';
+const linkedinUrl = 'https://linkedin.com/in/sinannar';
+const blogUrl = 'https://sinannar.github.io/blog/';
+const meetupUrl = 'https://www.meetup.com/auckland-dotnet/';
 
-var githubUrl = 'https://github.com/sinannar';
-var linkedinUrl = 'https://linkedin.com/in/sinannar';
-var twitterUrl = 'https://twitter.com/snn_nr';
-
-var githubTerminalLink = terminalLink("Github",githubUrl);
-var linkedinTerminalLink = terminalLink("LinkedIn",linkedinUrl);
-var twitterTerminalLink = terminalLink("Twitter",twitterUrl);
-
-var coloredGithubUrl = chalk.red(githubTerminalLink);
-var coloredLinkedinUrl = chalk.blue(linkedinTerminalLink);
-var coloredTwitterUrl = chalk.yellow(twitterTerminalLink);
-
+const githubLink = chalk.red(terminalLink("GitHub", githubUrl));
+const linkedinLink = chalk.blue(terminalLink("LinkedIn", linkedinUrl));
+const blogLink = chalk.green(terminalLink("Blog", blogUrl));
+const meetupLink = chalk.magenta(terminalLink("Meetups", meetupUrl));
 
 console.clear();
-console.log(img)
+console.log(img);
 
-var text = ` Hi there \n
-I am Sinan Nar. I work as a Software Engineer currently and I am interested in dotnet, angular and azure \n
-If you need to reach me, think twice, and if you are still keen, use one of the way below\n`;
+const header = chalk.bold.cyan(`
+ ┌─────────────────────────────────────────────────────────┐
+ │  Sinan Nar — Senior Software Engineer · Microsoft MVP   │
+ └─────────────────────────────────────────────────────────┘
+`);
 
-console.log(text);
-var answer = await inquirer.prompt([
+const about = `
+ ${chalk.white('Consultant focused on Apps and AI at')} ${chalk.yellow('ARINCO')}${chalk.white(', a Microsoft & GitHub partner.')}
+ ${chalk.white('Co-organiser of Aotearoa Azure Meetup, Auckland .NET UG, and NZ GitHub UG.')}
+`;
+
+const stack = `
+ ${chalk.bold.underline('Stack')}
+ ${chalk.cyan('.NET & C#')}      .NET 6+ · .NET Aspire · ASP.NET · EF Core
+ ${chalk.cyan('Azure')}          App Services · Functions · Container Apps · AKS · Service Bus
+ ${chalk.cyan('Frontend')}       TypeScript · Angular · Ionic · Node.js
+ ${chalk.cyan('DevOps')}         GitHub Actions · Azure DevOps · Terraform · Docker · Kubernetes
+ ${chalk.cyan('Data')}           MSSQL · PostgreSQL · CosmosDB · MongoDB
+ ${chalk.cyan('Observability')}  Datadog · Azure Monitor · App Insights
+`;
+
+const talks = `
+ ${chalk.bold.underline('Talks & Writing')}
+ • Aspire with AI (MCP) — Global Azure 2026
+ • Hands-On with Aspire — Auckland .NET User Group
+ • .NET Aspire — Junior Dev UG
+ • Blog: ${chalk.green('sinannar.github.io/blog')} — .NET, Azure, GitHub, and the bits in between
+`;
+
+console.log(header);
+console.log(about);
+console.log(stack);
+console.log(talks);
+
+const answer = await inquirer.prompt([
     {
         type: 'list',
         name: 'url',
-        message: 'These are the options for contacting me',
+        message: 'Where would you like to go?',
         choices: [
-          { name: coloredGithubUrl, value: githubUrl },
-          { name: coloredLinkedinUrl, value: linkedinUrl },
-          { name: coloredTwitterUrl, value: twitterUrl }
-        
+          { name: githubLink, value: githubUrl },
+          { name: linkedinLink, value: linkedinUrl },
+          { name: blogLink, value: blogUrl },
+          { name: meetupLink, value: meetupUrl }
         ]
       }
 ]);
 
-console.log(answer);
-open(answer.url); 
-console.clear();
+open(answer.url);
