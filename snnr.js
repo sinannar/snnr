@@ -66,7 +66,7 @@ console.log(talks);
 
 const answer = await inquirer.prompt([
     {
-        type: 'list',
+        type: 'select',
         name: 'url',
         message: 'Where would you like to go?',
         choices: [
