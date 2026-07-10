@@ -18,14 +18,17 @@
   "scripts": {
     "snnr": "node snnr.js"
   },
+  "engines": {
+    "node": ">=20"
+  },
   "author": "Sinan Nar",
   "license": "MIT",
   "dependencies": {
-    "chalk": "^4.1.0",
-    "got": "^11.5.0",
-    "inquirer": "^7.3.0",
-    "open": "6.0.0",
-    "terminal-image": "^1.1.0",
-    "terminal-link": "^2.1.1"
+    "chalk": "^5.6.2",
+    "got": "^15.1.0",
+    "inquirer": "^14.0.2",
+    "open": "^11.0.0",
+    "terminal-image": "^4.3.0",
+    "terminal-link": "^5.0.0"
   }
 }

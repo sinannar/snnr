@@ -62,7 +62,7 @@ When you run the command the terminal will:
 
 ## 🧰 Requirements
 
-- Node.js **>= 14** (the package uses ES modules and top-level `await`)
+- Node.js **>= 20** (required by current dependency versions)
 - A terminal that supports images and hyperlinks for the best experience
   (iTerm2, Kitty, WezTerm, modern Windows Terminal, etc.). It still works in
   basic terminals — you just get a graceful fallback.
@@ -80,6 +80,11 @@ When you run the command the terminal will:
 
 Inspired by [Fatih Kadir Akın](https://github.com/f)'s runnable npm card.
 Go give him a star — and if there's a **Buy Me A Coffee** button, click it. ☕
+
+## 🧭 Architecture Decision Records
+
+Architecture decisions are tracked in `docs/adr`.
+The initial baseline record is documented as **v1.0.0**.
 
 ## 📜 License
 
