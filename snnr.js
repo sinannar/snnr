@@ -8,9 +8,6 @@ import chalk from 'chalk';
 import inquirer from 'inquirer';
 import open from 'open';
 
-let img = await got('https://avatars.githubusercontent.com/u/1283812?v=4', { responseType: 'buffer' });
-img = await terminalImage.buffer(img.body, { width: '33%' });
-
 const githubUrl = 'https://github.com/sinannar';
 const linkedinUrl = 'https://linkedin.com/in/sinannar';
 const blogUrl = 'https://sinannar.github.io/blog/';
@@ -26,9 +23,6 @@ const mvpLink = chalk.yellow(terminalLink("Microsoft MVP", mvpUrl));
 const azureMeetupLink = chalk.magenta(terminalLink("Aotearoa Azure Meetup", azureMeetupUrl));
 const dotnetMeetupLink = chalk.magenta(terminalLink("Auckland .NET UG", dotnetMeetupUrl));
 const githubMeetupLink = chalk.magenta(terminalLink("NZ GitHub UG", githubMeetupUrl));
-
-console.clear();
-console.log(img);
 
 const header = chalk.bold.cyan(`
  ┌─────────────────────────────────────────────────────────┐
@@ -59,28 +53,80 @@ const talks = `
  • Blog: ${chalk.green('sinannar.github.io/blog')} — .NET, Azure, GitHub, and the bits in between
 `;
 
-console.log(header);
-console.log(about);
-console.log(stack);
-console.log(talks);
+const destinations = [
+{ name: mvpLink, value: mvpUrl },
+{ name: githubLink, value: githubUrl },
+{ name: linkedinLink, value: linkedinUrl },
+{ name: blogLink, value: blogUrl },
+{ name: azureMeetupLink, value: azureMeetupUrl },
+{ name: dotnetMeetupLink, value: dotnetMeetupUrl },
+{ name: githubMeetupLink, value: githubMeetupUrl }
+];
 
-const answer = await inquirer.prompt([
-    {
-        type: 'select',
-        name: 'url',
-        message: 'Where would you like to go?',
-        choices: [
-          new inquirer.Separator(chalk.dim('── Profiles ──')),
-          { name: mvpLink, value: mvpUrl },
-          { name: githubLink, value: githubUrl },
-          { name: linkedinLink, value: linkedinUrl },
-          { name: blogLink, value: blogUrl },
-          new inquirer.Separator(chalk.dim('── Meetups I co-organise ──')),
-          { name: azureMeetupLink, value: azureMeetupUrl },
-          { name: dotnetMeetupLink, value: dotnetMeetupUrl },
-          { name: githubMeetupLink, value: githubMeetupUrl }
-        ]
-      }
+export async function run({
+dependencies = { got, terminalImage, inquirer, open },
+output = console,
+skipImage = false,
+skipOpen = false
+} = {}) {
+let img;
+
+if (!skipImage) {
+  try {
+    const response = await dependencies.got(
+      'https://avatars.githubusercontent.com/u/1283812?v=4',
+      { responseType: 'buffer' }
+    );
+    img = await dependencies.terminalImage.buffer(response.body, { width: '33%' });
+  } catch {
+    output.warn('Avatar unavailable; continuing without it.');
+  }
+}
+
+output.clear();
+if (img) {
+  output.log(img);
+}
+output.log(header);
+output.log(about);
+output.log(stack);
+output.log(talks);
+
+const answer = await dependencies.inquirer.prompt([
+  {
+    type: 'select',
+    name: 'url',
+    message: 'Where would you like to go?',
+    choices: [
+      new dependencies.inquirer.Separator(chalk.dim('── Profiles ──')),
+      ...destinations.slice(0, 4),
+      new dependencies.inquirer.Separator(chalk.dim('── Meetups I co-organise ──')),
+      ...destinations.slice(4)
+    ]
+  }
 ]);
 
-open(answer.url);
+if (!skipOpen) {
+  try {
+    await dependencies.open(answer.url);
+  } catch {
+    output.warn('Unable to open the selected link.');
+  }
+}
+
+return answer.url;
+}
+
+export function parseArgs(args) {
+return {
+  skipImage: args.includes('--no-image'),
+  skipOpen: args.includes('--no-open')
+};
+}
+
+if (import.meta.url === `file://${process.argv[1]}`) {
+run(parseArgs(process.argv.slice(2))).catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});
+}

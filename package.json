@@ -1,6 +1,6 @@
 {
   "name": "snnr",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Sinan Nar — Senior Software Engineer · Microsoft MVP",
   "bin": {
     "snnr": "snnr.js"
@@ -16,7 +16,8 @@
     "sinan.nar"
   ],
   "scripts": {
-    "snnr": "node snnr.js"
+    "snnr": "node snnr.js",
+    "test": "node --test"
   },
   "engines": {
     "node": ">=20"
@@ -25,8 +26,8 @@
   "license": "MIT",
   "dependencies": {
     "chalk": "^5.6.2",
-    "got": "^15.1.0",
-    "inquirer": "^14.0.2",
+    "got": "14.6.4",
+    "inquirer": "12.10.0",
     "open": "^11.0.0",
     "terminal-image": "^4.3.0",
     "terminal-link": "^5.0.0"
