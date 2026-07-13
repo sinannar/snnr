@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { parseArgs, run } from '../snnr.js';
+import { isPromptExitKey, parseArgs, run } from '../snnr.js';
 
 function fakeDependencies({ promptUrl = 'https://github.com/sinannar', open = async () => {} } = {}) {
   let imageOptions;
@@ -32,6 +32,12 @@ test('parses diagnostic CLI flags', () => {
     skipImage: true,
     skipOpen: true,
     skipPrompt: false
+  });
+
+  test('recognizes escape and q as prompt exit keys', () => {
+    assert.equal(isPromptExitKey({ name: 'escape' }), true);
+    assert.equal(isPromptExitKey({ name: 'q' }), true);
+    assert.equal(isPromptExitKey({ name: 'enter' }), false);
   });
 });
 

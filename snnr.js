@@ -2,6 +2,7 @@
 'use strict';
 
 import got from 'got';
+import { emitKeypressEvents } from 'node:readline';
 import terminalImage from 'terminal-image';
 import terminalLink from 'terminal-link';
 import chalk from 'chalk';
@@ -63,6 +64,10 @@ const destinations = [
 { name: githubMeetupLink, value: githubMeetupUrl }
 ];
 
+export function isPromptExitKey(key) {
+  return key.name === 'escape' || key.name === 'q';
+}
+
 export async function run({
 dependencies = { got, terminalImage, inquirer, open },
 output = console,
@@ -97,9 +102,26 @@ output.log(about);
 output.log(stack);
 output.log(talks);
 
-const answer = skipPrompt
-  ? { url: destinations[0].value }
-  : await dependencies.inquirer.prompt([
+let answer;
+let removeExitKeyListener;
+
+if (skipPrompt) {
+  answer = { url: destinations[0].value };
+} else {
+  const onKeypress = (_input, key) => {
+    if (isPromptExitKey(key)) {
+      process.emit('SIGINT');
+    }
+  };
+
+  if (process.stdin.isTTY) {
+    emitKeypressEvents(process.stdin);
+    process.stdin.on('keypress', onKeypress);
+    removeExitKeyListener = () => process.stdin.off('keypress', onKeypress);
+  }
+
+  try {
+    answer = await dependencies.inquirer.prompt([
       {
         type: 'select',
         name: 'url',
@@ -112,6 +134,15 @@ const answer = skipPrompt
         ]
       }
     ]);
+  } catch (error) {
+    if (!['CancelPromptError', 'ExitPromptError'].includes(error?.name)) {
+      throw error;
+    }
+    return null;
+  } finally {
+    removeExitKeyListener?.();
+  }
+}
 
 if (!skipOpen) {
   try {
@@ -134,6 +165,10 @@ return {
 
 if (import.meta.url === `file://${process.argv[1]}`) {
 run(parseArgs(process.argv.slice(2))).catch((error) => {
+  if (['CancelPromptError', 'ExitPromptError'].includes(error?.name)) {
+    process.exitCode = 0;
+    return;
+  }
   console.error(error);
   process.exitCode = 1;
 });
