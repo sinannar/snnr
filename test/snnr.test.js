@@ -3,10 +3,14 @@ import { test } from 'node:test';
 import { parseArgs, run } from '../snnr.js';
 
 function fakeDependencies({ promptUrl = 'https://github.com/sinannar', open = async () => {} } = {}) {
+  let imageOptions;
   return {
     got: async () => ({ body: Buffer.from('avatar') }),
     terminalImage: {
-      buffer: async () => 'avatar output'
+      buffer: async (_image, options) => {
+        imageOptions = options;
+        return 'avatar output';
+      }
     },
     inquirer: {
       Separator: class Separator {
@@ -16,14 +20,18 @@ function fakeDependencies({ promptUrl = 'https://github.com/sinannar', open = as
       },
       prompt: async () => ({ url: promptUrl })
     },
-    open
+    open,
+    get imageOptions() {
+      return imageOptions;
+    }
   };
 }
 
 test('parses diagnostic CLI flags', () => {
   assert.deepEqual(parseArgs(['--no-image', '--no-open']), {
     skipImage: true,
-    skipOpen: true
+    skipOpen: true,
+    skipPrompt: false
   });
 });
 
@@ -49,6 +57,20 @@ test('renders the card, prompts, and opens the selected destination', async () =
   assert.equal(openedUrl, selectedUrl);
   assert.ok(logs.includes('avatar output'));
   assert.ok(logs.some((message) => message.includes('Sinan Nar')));
+});
+
+test('uses cursor-safe avatar rendering', async () => {
+  const dependencies = fakeDependencies();
+  await run({
+    dependencies,
+    output: { clear: () => {}, log: () => {}, warn: () => {} },
+    skipOpen: true
+  });
+
+  assert.deepEqual(dependencies.imageOptions, {
+    width: '33%',
+    preferNativeRender: false
+  });
 });
 
 test('continues when avatar loading fails', async () => {

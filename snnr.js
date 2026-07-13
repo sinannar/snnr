@@ -67,7 +67,8 @@ export async function run({
 dependencies = { got, terminalImage, inquirer, open },
 output = console,
 skipImage = false,
-skipOpen = false
+skipOpen = false,
+skipPrompt = false
 } = {}) {
 let img;
 
@@ -77,7 +78,11 @@ if (!skipImage) {
       'https://avatars.githubusercontent.com/u/1283812?v=4',
       { responseType: 'buffer' }
     );
-    img = await dependencies.terminalImage.buffer(response.body, { width: '33%' });
+    img = await dependencies.terminalImage.buffer(response.body, {
+      width: '33%',
+      // Native inline images do not advance the cursor in every terminal.
+      preferNativeRender: false
+    });
   } catch {
     output.warn('Avatar unavailable; continuing without it.');
   }
@@ -92,19 +97,21 @@ output.log(about);
 output.log(stack);
 output.log(talks);
 
-const answer = await dependencies.inquirer.prompt([
-  {
-    type: 'select',
-    name: 'url',
-    message: 'Where would you like to go?',
-    choices: [
-      new dependencies.inquirer.Separator(chalk.dim('── Profiles ──')),
-      ...destinations.slice(0, 4),
-      new dependencies.inquirer.Separator(chalk.dim('── Meetups I co-organise ──')),
-      ...destinations.slice(4)
-    ]
-  }
-]);
+const answer = skipPrompt
+  ? { url: destinations[0].value }
+  : await dependencies.inquirer.prompt([
+      {
+        type: 'select',
+        name: 'url',
+        message: 'Where would you like to go?',
+        choices: [
+          new dependencies.inquirer.Separator(chalk.dim('── Profiles ──')),
+          ...destinations.slice(0, 4),
+          new dependencies.inquirer.Separator(chalk.dim('── Meetups I co-organise ──')),
+          ...destinations.slice(4)
+        ]
+      }
+    ]);
 
 if (!skipOpen) {
   try {
@@ -120,7 +127,8 @@ return answer.url;
 export function parseArgs(args) {
 return {
   skipImage: args.includes('--no-image'),
-  skipOpen: args.includes('--no-open')
+  skipOpen: args.includes('--no-open'),
+  skipPrompt: args.includes('--no-prompt')
 };
 }
 

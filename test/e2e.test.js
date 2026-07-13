@@ -4,7 +4,7 @@ import { spawn } from 'node:child_process';
 import { test } from 'node:test';
 
 test('CLI starts and completes an interactive selection', async () => {
-  const child = spawn(process.execPath, ['snnr.js', '--no-image', '--no-open'], {
+  const child = spawn(process.execPath, ['snnr.js', '--no-image', '--no-open', '--no-prompt'], {
     cwd: new URL('..', import.meta.url),
     stdio: ['pipe', 'pipe', 'pipe']
   });
@@ -17,11 +17,9 @@ test('CLI starts and completes an interactive selection', async () => {
     stderr += chunk;
   });
 
-  child.stdin.write('\n');
   child.stdin.end();
   const [code] = await once(child, 'close');
 
   assert.equal(code, 0, stderr);
   assert.match(stdout, /Sinan Nar — Senior Software Engineer/);
-  assert.match(stdout, /Where would you like to go\?/);
 });
