@@ -2,14 +2,12 @@
 'use strict';
 
 import got from 'got';
+import { emitKeypressEvents } from 'node:readline';
 import terminalImage from 'terminal-image';
 import terminalLink from 'terminal-link';
 import chalk from 'chalk';
 import inquirer from 'inquirer';
 import open from 'open';
-
-let img = await got('https://avatars.githubusercontent.com/u/1283812?v=4', { responseType: 'buffer' });
-img = await terminalImage.buffer(img.body, { width: '33%' });
 
 const githubUrl = 'https://github.com/sinannar';
 const linkedinUrl = 'https://linkedin.com/in/sinannar';
@@ -26,9 +24,6 @@ const mvpLink = chalk.yellow(terminalLink("Microsoft MVP", mvpUrl));
 const azureMeetupLink = chalk.magenta(terminalLink("Aotearoa Azure Meetup", azureMeetupUrl));
 const dotnetMeetupLink = chalk.magenta(terminalLink("Auckland .NET UG", dotnetMeetupUrl));
 const githubMeetupLink = chalk.magenta(terminalLink("NZ GitHub UG", githubMeetupUrl));
-
-console.clear();
-console.log(img);
 
 const header = chalk.bold.cyan(`
  ┌─────────────────────────────────────────────────────────┐
@@ -59,28 +54,122 @@ const talks = `
  • Blog: ${chalk.green('sinannar.github.io/blog')} — .NET, Azure, GitHub, and the bits in between
 `;
 
-console.log(header);
-console.log(about);
-console.log(stack);
-console.log(talks);
+const destinations = [
+{ name: mvpLink, value: mvpUrl },
+{ name: githubLink, value: githubUrl },
+{ name: linkedinLink, value: linkedinUrl },
+{ name: blogLink, value: blogUrl },
+{ name: azureMeetupLink, value: azureMeetupUrl },
+{ name: dotnetMeetupLink, value: dotnetMeetupUrl },
+{ name: githubMeetupLink, value: githubMeetupUrl }
+];
 
-const answer = await inquirer.prompt([
-    {
+export function isPromptExitKey(key) {
+  return key.name === 'escape' || key.name === 'q';
+}
+
+export async function run({
+dependencies = { got, terminalImage, inquirer, open },
+output = console,
+skipImage = false,
+skipOpen = false,
+skipPrompt = false
+} = {}) {
+let img;
+
+if (!skipImage) {
+  try {
+    const response = await dependencies.got(
+      'https://avatars.githubusercontent.com/u/1283812?v=4',
+      { responseType: 'buffer' }
+    );
+    img = await dependencies.terminalImage.buffer(response.body, {
+      width: '33%',
+      // Native inline images do not advance the cursor in every terminal.
+      preferNativeRender: false
+    });
+  } catch {
+    output.warn('Avatar unavailable; continuing without it.');
+  }
+}
+
+output.clear();
+if (img) {
+  output.log(img);
+}
+output.log(header);
+output.log(about);
+output.log(stack);
+output.log(talks);
+
+let answer;
+let removeExitKeyListener;
+
+if (skipPrompt) {
+  answer = { url: destinations[0].value };
+} else {
+  const onKeypress = (_input, key) => {
+    if (isPromptExitKey(key)) {
+      process.emit('SIGINT');
+    }
+  };
+
+  if (process.stdin.isTTY) {
+    emitKeypressEvents(process.stdin);
+    process.stdin.on('keypress', onKeypress);
+    removeExitKeyListener = () => process.stdin.off('keypress', onKeypress);
+  }
+
+  try {
+    answer = await dependencies.inquirer.prompt([
+      {
         type: 'select',
         name: 'url',
         message: 'Where would you like to go?',
         choices: [
-          new inquirer.Separator(chalk.dim('── Profiles ──')),
-          { name: mvpLink, value: mvpUrl },
-          { name: githubLink, value: githubUrl },
-          { name: linkedinLink, value: linkedinUrl },
-          { name: blogLink, value: blogUrl },
-          new inquirer.Separator(chalk.dim('── Meetups I co-organise ──')),
-          { name: azureMeetupLink, value: azureMeetupUrl },
-          { name: dotnetMeetupLink, value: dotnetMeetupUrl },
-          { name: githubMeetupLink, value: githubMeetupUrl }
+          new dependencies.inquirer.Separator(chalk.dim('── Profiles ──')),
+          ...destinations.slice(0, 4),
+          new dependencies.inquirer.Separator(chalk.dim('── Meetups I co-organise ──')),
+          ...destinations.slice(4)
         ]
       }
-]);
+    ]);
+  } catch (error) {
+    if (!['CancelPromptError', 'ExitPromptError'].includes(error?.name)) {
+      throw error;
+    }
+    return null;
+  } finally {
+    removeExitKeyListener?.();
+  }
+}
 
-open(answer.url);
+if (!skipOpen) {
+  try {
+    await dependencies.open(answer.url);
+  } catch {
+    output.warn('Unable to open the selected link.');
+  }
+}
+
+return answer.url;
+}
+
+export function parseArgs(args) {
+return {
+  skipImage: args.includes('--no-image'),
+  skipOpen: args.includes('--no-open'),
+  skipPrompt: args.includes('--no-prompt')
+};
+}
+
+if (import.meta.url === `file://${process.argv[1]}`) {
+run(parseArgs(process.argv.slice(2))).catch((error) => {
+  if (['CancelPromptError', 'ExitPromptError'].includes(error?.name)) {
+    process.exitCode = 0;
+    return;
+  }
+  console.error(error);
+  process.exitCode = 1;
+});
+}

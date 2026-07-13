@@ -76,6 +76,10 @@ When you run the command the terminal will:
 - [got](https://www.npmjs.com/package/got) — fetch the avatar
 - [open](https://www.npmjs.com/package/open) — open the selected profile
 
+The dependency versions are pinned and installed with `npm ci` in CI so that
+published builds use the tested dependency set. Use `--no-image` or `--no-open`
+when running in a non-interactive environment.
+
 ## 💡 Inspiration
 
 Inspired by [Fatih Kadir Akın](https://github.com/f)'s runnable npm card.
@@ -84,7 +88,9 @@ Go give him a star — and if there's a **Buy Me A Coffee** button, click it. �
 ## 🧭 Architecture Decision Records
 
 Architecture decisions are tracked in `docs/adr`.
-The initial baseline record is documented as **v1.0.0**.
+The initial baseline record is documented as **v1.0.0**. The v1.1.2
+dependency-compatibility and testing decision is documented in
+`docs/adr/0002-dependency-compatibility-and-regression-tests-v1.1.2.md`.
 
 ## 📜 License
 

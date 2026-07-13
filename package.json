@@ -1,6 +1,6 @@
 {
   "name": "snnr",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Sinan Nar — Senior Software Engineer · Microsoft MVP",
   "bin": {
     "snnr": "snnr.js"
@@ -16,7 +16,8 @@
     "sinan.nar"
   ],
   "scripts": {
-    "snnr": "node snnr.js"
+    "snnr": "node snnr.js",
+    "test": "node --test"
   },
   "engines": {
     "node": ">=20"
